@@ -1,4 +1,4 @@
-FROM archlinux
-RUN pacman -Sy wayvnc jansson --noconfirm
+FROM alpine
+RUN apk add wayvnc jansson
 USER nobody
 ENTRYPOINT ["wayvnc"]
