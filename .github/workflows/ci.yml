@@ -35,7 +35,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
-        push: github.event_name != 'pull_request'
+        push: ${{ github.event_name != 'pull_request' }}
         platforms: linux/amd64, linux/arm64
         tags: ghcr.io/wavyland/wayvnc:latest, ghcr.io/wavyland/wayvnc:${{ steps.sha.outputs.sha }}
         cache-from: type=gha
