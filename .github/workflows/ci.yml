@@ -11,6 +11,10 @@ on:
   - cron:  '0 0 * * *'
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -27,9 +31,13 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Determine SHA
-      id: sha
-      run: echo "::set-output name=sha::$(git describe --always --tags --dirty)"
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: type=sha
+        flavor: latest=true
     - name: Build and push
       id: push
       uses: docker/build-push-action@v6
@@ -37,7 +45,8 @@ jobs:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
         platforms: linux/amd64, linux/arm64
-        tags: ghcr.io/wavyland/wayvnc:latest, ghcr.io/wavyland/wayvnc:${{ steps.sha.outputs.sha }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Determine digest
