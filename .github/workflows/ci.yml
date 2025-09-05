@@ -16,7 +16,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  push:
+  container:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
